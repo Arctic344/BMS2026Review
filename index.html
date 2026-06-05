@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Business Management Systems 2026 Review</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/20svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%233b82f6'/><text x='50' y='50' font-family='Arial' font-size='40' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central'>BMS</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#242423">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/20svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f5cb5c'/><text x='50' y='50' font-family='Segoe UI' font-size='40' font-weight='bold' fill='%23242423' text-anchor='middle' dominant-baseline='central'>BMS</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --surface-color: #1e293b;
-            --primary-color: #3b82f6;
-            --primary-hover: #2563eb;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --bg-color: #242423;
+            --surface-color: #333533;
+            --primary-color: #f5cb5c;
+            --primary-hover: #d4ae4b;
+            --text-main: #e8eddf;
+            --text-muted: #cfdbd5;
             --success-color: #10b981;
             --error-color: #ef4444;
-            --border-color: #334155;
+            --border-color: #cfdbd5;
             --card-radius: 16px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -31,7 +31,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             line-height: 1.5;
@@ -63,7 +63,7 @@
         /* Buttons */
         .btn {
             background-color: var(--primary-color);
-            color: white;
+            color: var(--bg-color);
             border: none;
             border-radius: 12px;
             padding: 14px 20px;
@@ -273,7 +273,8 @@
 
         <!-- SCREEN: Home -->
         <div id="screen-home" class="screen">
-            <h2>Select Weeks to Practice</h2>
+            <button class="btn mb-4" onclick="app.reviewAll()">Review All</button>
+            <h2>Practice a selection of weeks</h2>
             <div class="mb-4">
                 <button class="btn btn-outline" style="width: auto; margin-right: 10px;" onclick="app.selectAllWeeks()">Select All</button>
                 <button class="btn btn-outline" style="width: auto;" onclick="app.deselectAllWeeks()">Deselect All</button>
@@ -281,7 +282,7 @@
             <div id="week-list" class="week-list">
                 <!-- Weeks generated via JS -->
             </div>
-            <button class="btn" onclick="app.startQuiz()">Start Review</button>
+            <button class="btn" onclick="app.startQuiz()">Start Selected</button>
             
             <div id="install-container" class="hidden mt-4">
                 <button id="install-btn" class="btn" style="background-color: var(--success-color);">📱 Install App to Home Screen</button>
@@ -435,6 +436,11 @@
             
             deselectAllWeeks() {
                 document.querySelectorAll('.week-item input[type="checkbox"]').forEach(cb => cb.checked = false);
+            },
+
+            reviewAll() {
+                this.selectAllWeeks();
+                this.startQuiz();
             },
 
             startQuiz() {

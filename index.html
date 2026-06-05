@@ -289,7 +289,7 @@
         </div>
 
         <!-- SCREEN: Quiz -->
-        <div id="screen-quiz" class="screen hidden">
+        <div id="screen-quiz" class="screen hidden" style="padding-bottom: 70vh;">
             <div class="progress-bar">
                 <div id="quiz-progress" class="progress-fill"></div>
             </div>
@@ -521,6 +521,14 @@
                     document.getElementById('hint-area').classList.remove('hidden');
                     document.getElementById('hint-text').textContent = displayHint;
                 }
+
+                // Scroll the page so the week info is at the top
+                setTimeout(() => {
+                    const metaInfo = document.getElementById('quiz-meta');
+                    if (metaInfo) {
+                        metaInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }, 50);
             },
 
             handleAnswer(selectedIndex, btnElement) {

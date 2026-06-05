@@ -13,7 +13,9 @@ const urlsToCache = [
   './week8.js',
   './week9.js',
   './week10.js',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', event => {

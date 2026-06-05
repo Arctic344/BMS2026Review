@@ -1,8 +1,9 @@
-const CACHE_NAME = 'bms-quiz-app-v1';
+const CACHE_NAME = 'bms-quiz-app-v2';
 const urlsToCache = [
   './',
   './index.html',
   './data.js',
+  './add_hints.js',
   './week1.js',
   './week2.js',
   './week3.js',
@@ -12,7 +13,7 @@ const urlsToCache = [
   './week8.js',
   './week9.js',
   './week10.js',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
+  './manifest.json'
 ];
 
 self.addEventListener('install', event => {
@@ -21,6 +22,9 @@ self.addEventListener('install', event => {
       .then(cache => {
         console.log('Opened cache');
         return cache.addAll(urlsToCache);
+      })
+      .catch(err => {
+        console.error('Failed to cache files during install', err);
       })
   );
 });

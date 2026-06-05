@@ -80,6 +80,13 @@
         }
         .btn:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
         .btn:active { transform: translateY(1px); }
+        .btn:disabled {
+            background-color: var(--border-color);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.7;
+        }
         .btn-outline {
             background-color: transparent;
             border: 2px solid var(--border-color);
@@ -253,18 +260,6 @@
             30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
-
-        /* Download App Info */
-        .download-info {
-            background-color: rgba(59, 130, 246, 0.1);
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px dashed var(--primary-color);
-            margin-top: 24px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
     </style>
 </head>
 <body>
@@ -288,10 +283,8 @@
             </div>
             <button class="btn" onclick="app.startQuiz()">Start Review</button>
             
-            <div class="download-info">
-                <strong>To use on phone offline:</strong> Move this folder (`quiz-app`) to your phone and open `index.html` in your browser. 
-                <br><br>
-                <button class="btn btn-outline btn-small" onclick="app.downloadZip()" style="width: 100%;">Download as ZIP</button>
+            <div id="install-container" class="hidden mt-4">
+                <button id="install-btn" class="btn" style="background-color: var(--success-color);">📱 Install App to Home Screen</button>
             </div>
         </div>
 
@@ -307,21 +300,16 @@
 
             <div class="question-card" id="question-card">
                 <div id="quiz-question" class="question-text">Loading question...</div>
-                <div id="quiz-options" class="options-list">
+                <div id="quiz-options" class="options-list mb-4">
                     <!-- Options generated via JS -->
                 </div>
                 
-                <div id="feedback-area" class="feedback-section hidden">
-                    <div id="feedback-msg" style="font-weight: 600; margin-bottom: 12px;"></div>
-                    
-                    <div id="hint-area" class="hidden">
-                        <button class="btn btn-outline btn-small" onclick="document.getElementById('hint-text').classList.toggle('hidden')">💡 Show Hint</button>
-                        <div id="hint-text" class="hint-text hidden"></div>
-                    </div>
-                    
-                    
-                    <button class="btn mt-4" id="next-btn" onclick="app.nextQuestion()">Next Question ➡️</button>
+                <div id="hint-area" class="hidden mb-4">
+                    <button class="btn btn-outline btn-small" style="width: 100%;" onclick="document.getElementById('hint-text').classList.toggle('hidden')">💡 Show Hint</button>
+                    <div id="hint-text" class="hint-text hidden mt-2"></div>
                 </div>
+                
+                <button class="btn" id="next-btn" onclick="app.nextQuestion()" disabled>Next Question ➡️</button>
             </div>
         </div>
 
@@ -515,9 +503,24 @@
                 });
 
                 // Reset feedback area
-                document.getElementById('feedback-area').classList.add('hidden');
+                const nextBtn = document.getElementById('next-btn');
+                nextBtn.disabled = true;
+                
                 document.getElementById('hint-area').classList.add('hidden');
                 document.getElementById('hint-text').classList.add('hidden');
+                
+                // Hint logic prep
+                let displayHint = null;
+                if (q.hintId && quizData.hints[q.hintId]) {
+                    displayHint = quizData.hints[q.hintId];
+                } else if (q.hint) {
+                    displayHint = quizData.hints[q.hint] || q.hint;
+                }
+
+                if (displayHint) {
+                    document.getElementById('hint-area').classList.remove('hidden');
+                    document.getElementById('hint-text').textContent = displayHint;
+                }
             },
 
             handleAnswer(selectedIndex, btnElement) {
@@ -548,34 +551,14 @@
                 });
 
                 // Show feedback
-                const feedback = document.getElementById('feedback-area');
-                const msg = document.getElementById('feedback-msg');
-                feedback.classList.remove('hidden');
+                const nextBtn = document.getElementById('next-btn');
+                nextBtn.disabled = false;
 
-                if (isCorrect) {
-                    msg.innerHTML = `<span style="color: var(--success-color);">✅ Correct!</span>`;
-                } else {
-                    msg.innerHTML = `<span style="color: var(--error-color);">❌ Incorrect</span>`;
-                    
+                if (!isCorrect) {
                     // Re-insert 10 questions ahead, or at end if < 10
                     const insertIndex = Math.min(10, this.state.queue.length);
                     this.state.queue.splice(insertIndex, 0, q);
                 }
-
-                // Hint logic
-                let displayHint = null;
-                if (q.hintId && quizData.hints[q.hintId]) {
-                    displayHint = quizData.hints[q.hintId];
-                } else if (q.hint) {
-                    displayHint = quizData.hints[q.hint] || q.hint;
-                }
-
-                if (displayHint) {
-                    document.getElementById('hint-area').classList.remove('hidden');
-                    document.getElementById('hint-text').textContent = displayHint;
-                }
-
-
             },
 
             renderStats() {
@@ -680,10 +663,28 @@
                 });
             },
 
-            downloadZip() {
-                alert('For security reasons, web browsers cannot create a zip of local folders directly. \n\nSince you are already running this locally, you can simply right-click the "quiz-app" folder on your computer, select "Send to -> Compressed (zipped) folder", and transfer that file to your phone!');
-            }
         };
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installContainer = document.getElementById('install-container');
+            if (installContainer) installContainer.classList.remove('hidden');
+        });
+
+        document.getElementById('install-btn')?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                }
+                deferredPrompt = null;
+                const installContainer = document.getElementById('install-container');
+                if (installContainer) installContainer.classList.add('hidden');
+            }
+        });
 
         // Initialize app on load
         window.onload = () => {

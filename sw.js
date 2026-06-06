@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bms-quiz-app-v3';
+const CACHE_NAME = 'bms-quiz-app-v4';
 const urlsToCache = [
   './',
   './index.html',
@@ -15,7 +15,16 @@ const urlsToCache = [
   './week10.js',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './pdfs/1 - Models.pdf',
+  './pdfs/2 - Networks.pdf',
+  './pdfs/3 - Processes and Automation.pdf',
+  './pdfs/4 - Supply Chain Management.pdf',
+  './pdfs/5 - On Pricing.pdf',
+  './pdfs/7 - On Financing.pdf',
+  './pdfs/8 - Intellectual Property.pdf',
+  './pdfs/9 - Ethics.pdf',
+  './pdfs/10 - Risk Standards and Governance.pdf'
 ];
 
 self.addEventListener('install', event => {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bms-quiz-app-v2';
+const CACHE_NAME = 'bms-quiz-app-v3';
 const urlsToCache = [
   './',
   './index.html',
@@ -19,6 +19,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -57,4 +58,5 @@ self.addEventListener('activate', event => {
       );
     })
   );
+  event.waitUntil(clients.claim());
 });
